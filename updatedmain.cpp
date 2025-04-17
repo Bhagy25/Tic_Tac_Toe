@@ -2,12 +2,14 @@
 using namespace std;
 
 struct Move {
-    int row, col;
+    int row, col;// coordinates
 };
 
 char player = 'x', opponent = 'o';
 
 bool isMovesLeft(char board[3][3]) {
+    // checking if there's an empty space if yes then return true
+    // i.e. checking if moves are possible
     for (int i = 0; i < 3; i++)
         for (int j = 0; j < 3; j++)
             if (board[i][j] == '_')
@@ -16,6 +18,8 @@ bool isMovesLeft(char board[3][3]) {
 }
 
 int evaluate(char b[3][3]) {
+// check if someone has won the game
+    // check row wise
     for (int row = 0; row < 3; row++) {
         if (b[row][0] == b[row][1] && b[row][1] == b[row][2]) {
             if (b[row][0] == player)
@@ -24,7 +28,7 @@ int evaluate(char b[3][3]) {
                 return -10;
         }
     }
-
+    // check column wise
     for (int col = 0; col < 3; col++) {
         if (b[0][col] == b[1][col] && b[1][col] == b[2][col]) {
             if (b[0][col] == player)
@@ -33,7 +37,7 @@ int evaluate(char b[3][3]) {
                 return -10;
         }
     }
-
+    // check diagonal wise
     if (b[0][0] == b[1][1] && b[1][1] == b[2][2]) {
         if (b[0][0] == player)
             return +10;
@@ -49,7 +53,8 @@ int evaluate(char b[3][3]) {
     }
     return 0;
 }
-
+// ai algo that checks all opponenet and bot moves by calculating all possibilities through recursion and find the best move for bot
+// depth- for faster stimulation
 int minimax(char board[3][3], int depth, bool isMax) {
     int score = evaluate(board);
     if (score == 10 || score == -10)
@@ -59,6 +64,7 @@ int minimax(char board[3][3], int depth, bool isMax) {
         return 0 - depth;
 
     if (isMax) {
+        //simulating all moves for bot for max score
         int best = -1000;
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
@@ -71,6 +77,7 @@ int minimax(char board[3][3], int depth, bool isMax) {
         }
         return best;
     } else {
+        // for person and trying to make the score minimum as possible
         int best = 1000;
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
@@ -80,12 +87,13 @@ int minimax(char board[3][3], int depth, bool isMax) {
                     board[i][j] = '_';
                 }
             }
-        }
+        } 
         return best;
     }
 }
 
 Move makeMove(char board[3][3]) {
+    // move through all empty set and find the best move for bot 
     int bestVal = -1000;
     Move bestMove = {0, 0};
     for (int i = 0; i < 3; i++) {
@@ -106,6 +114,8 @@ Move makeMove(char board[3][3]) {
 }
 
 void printboard(char board[3][3]) {
+    // clears the screen and prints x , o for opp and bot respectively
+    // color grid 
     cout << "\033[2J\033[H"; // Clear screen and move cursor to top left
     cout << "\033[36m";
     cout << "+---+---+---+\n";
@@ -125,6 +135,7 @@ void printboard(char board[3][3]) {
 }
 
 bool checkGameOver(char board[3][3]) {
+    // uses evaluate to check if someone has won the game or not
     int result = evaluate(board);
     if (result == 10) {
         cout << "\033[33mBot wins\033[0m\n";
@@ -142,6 +153,7 @@ bool checkGameOver(char board[3][3]) {
 }
 
 int main() {
+    // board initialization 
     char board[3][3] = {
         { '_', '_', '_' },
         { '_', '_', '_' },
@@ -151,6 +163,7 @@ int main() {
     cout << "\033[36mPlayer: o\nComputer: x\n-----------Beat the bot-----------\033[0m\n";
     srand(time(NULL));
     printboard(board);
+   // rand for human or bot initializing the game
     if (rand() & 1) {
         cout << "You start first\n";
         while (!checkGameOver(board)) {
